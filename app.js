@@ -8,6 +8,8 @@ var http = require('http');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var gamesRouter = require('./routes/games');
+var loansRouter = require('./routes/loans');
 
 import 'dotenv/config';
 import models, { connectDb } from './models';
@@ -22,7 +24,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-
+app.use('/games', gamesRouter);
+app.use('/loans', loansRouter);
+app.use(async (req, res, next) => {
+    req.context = {
+      models
+    };
+    next();
+  });
 /**
  * Get port from environment and store in Express.
  */
@@ -39,7 +48,7 @@ var server = http.createServer(app);
 /**
  * Listen on provided port, on all network interfaces.
  */
-const eraseDatabaseOnSync = true;
+const eraseDatabaseOnSync = false;
 
 connectDb().then(async () => {
 	if (eraseDatabaseOnSync) {
@@ -49,6 +58,8 @@ connectDb().then(async () => {
     ]);
     createUsersWithMessages();
   }
+
+  
 
   server.listen(port, () =>
     console.log(`Example app listening on port ${process.env.PORT}!`),
@@ -120,6 +131,7 @@ function onListening() {
 const createUsersWithMessages = async () => {
 	const game1 = new models.Boardgame({
 		name: 'Catan',
+    code:1
 	});
 	
 
@@ -132,6 +144,7 @@ const createUsersWithMessages = async () => {
 
 	const game2 = new models.Boardgame({
 		name: 'Carcassone',
+    code:2
 	});
 	
 
