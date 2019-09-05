@@ -2,8 +2,23 @@ import models from '../models';
 
 async function allGames(req, res){
 	try {
-		const users = await models.Boardgame.find();
-  	return res.status(200).send(users);
+		const games = await models.Boardgame.find();
+		const gamesWithState = await Promise.all(games.map(async (item) => { 
+			let loanExists = await models.Loan.isLoaned(item.id);
+			let game = {};
+			game.id = item.id;
+			game.name = item.name;
+			game.code = item.code
+			
+			if (loanExists === -1){
+				game.state = 'available';
+			} else {
+				game.state = 'loaned';
+			}
+			console.log(game);
+			return game;
+		})); 
+  	return res.status(200).send(gamesWithState);
 
 	} catch (e) {
 		return res.status(500).send(e.message);

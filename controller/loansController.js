@@ -15,6 +15,10 @@ async function newLoan(req, res){
 	try {
 		const game = await models.Boardgame.findByCode(req.body.boardgame);
 		console.log(game);
+		const loan = await models.Loan.findLoan(req.body.person,game.id);
+		if (loan === -1) {
+			return res.status(500).send("game already in use");	
+		}
 		const newLoan = await models.Loan.create({
 			person: req.body.person,
 			state: true,
@@ -32,6 +36,9 @@ async function returnLoan(req, res){
 		const game = await models.Boardgame.findByCode(req.body.boardgame);
 		console.log(game);
 		const loan = await models.Loan.findLoan(req.body.person,game.id);
+		if (loan === -1){
+			return res.status(500).send("could not find loan");	
+		}
 		console.log(loan);
 		loan.state = false;
 		await loan.save();

@@ -25,6 +25,17 @@ loanSchema.statics.findLoan = async function (person, boardgame) {
   return loan;
 };
 
+loanSchema.statics.isLoaned = async function ( boardgame) {
+  const loanExists = await this.findOne({
+    state:true,
+    boardgame:boardgame
+  });
+  if (!loanExists) {
+    return -1;
+  }
+  return 1;
+};
+
 
 const Loan = mongoose.model('Loan', loanSchema);
 export default Loan;
